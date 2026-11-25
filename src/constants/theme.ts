@@ -1,4 +1,6 @@
-import { I18nManager, useColorScheme, type TextStyle } from 'react-native';
+import { I18nManager, type TextStyle } from 'react-native';
+
+import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export const palette = {
   light: {
