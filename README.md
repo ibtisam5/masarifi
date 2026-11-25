@@ -4,7 +4,9 @@ A mobile expense tracker that reads receipts with AI. Take a photo of a receipt 
 
 > صوّر الفاتورة، والتطبيق يقرأها لك: المحل، والتاريخ، والمبلغ، والتصنيف، والأصناف. وبعدها تشوف تقرير شهري لمصاريفك.
 
-<!-- TODO: live demo link, screenshots and a short video -->
+**🔗 Live demo: [masarifi.expo.app](https://masarifi.expo.app)**. Open it on your phone and tap "صوّر فاتورة" to photograph a receipt, or try the sample in [`samples/`](samples/receipt-sample.png).
+
+<!-- TODO: screenshots and a short video -->
 
 ## Features
 
