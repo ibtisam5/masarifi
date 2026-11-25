@@ -1,65 +1,41 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://unistyl.es/), etc.
- */
+import { I18nManager, useColorScheme, type TextStyle } from 'react-native';
 
-import '@/global.css';
-
-import { Platform } from 'react-native';
-
-export const Colors = {
+export const palette = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    bg: '#F7F7F5',
+    card: '#FFFFFF',
+    text: '#1C1C1A',
+    muted: '#6B6B66',
+    border: '#E4E4DF',
+    accent: '#0F766E',
+    accentText: '#FFFFFF',
+    accentSoft: '#E6F2F0',
+    danger: '#DC2626',
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    bg: '#121211',
+    card: '#1C1C1A',
+    text: '#ECECEA',
+    muted: '#9B9B95',
+    border: '#2E2E2B',
+    accent: '#2DD4BF',
+    accentText: '#0B2622',
+    accentSoft: '#15302D',
+    danger: '#F87171',
   },
-} as const;
+};
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export type Palette = typeof palette.light;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+export function useTheme(): Palette {
+  return useColorScheme() === 'dark' ? palette.dark : palette.light;
+}
 
-export const Spacing = {
-  half: 2,
-  one: 4,
-  two: 8,
-  three: 16,
-  four: 24,
-  five: 32,
-  six: 64,
-} as const;
-
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+// The UI is Arabic (right to left). When the phone itself is in an RTL
+// language React Native already flips rows and text; otherwise we flip them.
+const rtl = I18nManager.isRTL;
+export const row = (rtl ? 'row' : 'row-reverse') as 'row' | 'row-reverse';
+export const textStart: TextStyle = {
+  textAlign: rtl ? 'left' : 'right',
+  writingDirection: 'rtl',
+};

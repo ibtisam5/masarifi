@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "مصاريفي",
+    "slug": "masarifi",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobile",
+    "scheme": "masarifi",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"
@@ -31,6 +31,15 @@
           "backgroundColor": "#208AEF",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
+        }
+      ],
+      "expo-sqlite",
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "مصاريفي يحتاج الكاميرا عشان يصوّر الفواتير ويقرأها.",
+          "photosPermission": "مصاريفي يحتاج الوصول للصور عشان تختار صورة فاتورة.",
+          "microphonePermission": false
         }
       ]
     ],

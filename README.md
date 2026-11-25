@@ -1,56 +1,67 @@
-# Welcome to your Expo app 👋
+# مصاريفي · Masarifi
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile expense tracker that reads receipts with AI. Take a photo of a receipt (Arabic or English, printed or handwritten) and the app extracts the store, date, total, category and line items, ready to review and save.
 
-## Get started
+> صوّر الفاتورة، والتطبيق يقرأها لك: المحل، والتاريخ، والمبلغ، والتصنيف، والأصناف. وبعدها تشوف تقرير شهري لمصاريفك.
 
-1. Install dependencies
+<!-- TODO: live demo link, screenshots and a short video -->
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- **Receipt scanning with Claude Vision.** Photos are turned into structured data (JSON schema enforced with structured outputs), not free text.
+- **Picks the right number.** The prompt targets the final amount paid including VAT, not the subtotal, and returns `null` instead of guessing unreadable values.
+- **Gulf-ready.** Understands Arabic receipts and currencies (ر.ع / OMR with 3 decimals, SAR, AED, ...).
+- **Review before saving.** Every scan opens an editable form; manual entry uses the same screen.
+- **Monthly report.** Spending by category and top merchants per month.
+- **Private by default.** Expenses are stored on the device (SQLite key-value store), with no account needed.
+- **Cost protection.** Images are resized to 1568 px before upload; scans are rate-limited per visitor and per day (Redis-backed in production, fail-closed).
+- **Native feel.** Expo Router native tabs on iOS (Liquid Glass), dark mode, right-to-left Arabic UI. Also runs on the web.
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+| Layer | Tech |
+|---|---|
+| App | Expo SDK 58, React Native, Expo Router, TypeScript |
+| AI | Claude API (`@anthropic-ai/sdk`): vision + structured outputs (zod) |
+| API | Expo Router API routes (`src/app/api/scan+api.ts`), so the API key stays on the server |
+| Storage | `expo-sqlite/kv-store` on device, `localStorage` on web |
+| Rate limiting | Upstash Redis + `@upstash/ratelimit` (in-memory fallback in development) |
+| Hosting | Expo Hosting |
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## How it works
 
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+Camera / Photos ─▶ resize to 1568px JPEG ─▶ POST /api/scan ─▶ Claude (vision, structured output)
+                                                   │
+        review screen ◀── draft {merchant, date, total, currency, category, items}
+              │
+              └─▶ saved on the device ─▶ list + monthly report
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+## Run locally
 
-### Other setup steps
+Requirements: Node.js 20+, a Claude API key, and the **Expo Go** app on your phone.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```bash
+npm install
+cp .env.example .env.local   # put your key in ANTHROPIC_API_KEY
+npx expo start
+```
 
-## Learn more
+Scan the QR code with your phone (same Wi-Fi as the computer). Expo Go asks you to sign in to an Expo account; run `npx expo login` on the computer with the same account. A sample receipt to try is in [`samples/`](samples/).
 
-To learn more about developing your project with Expo, look at the following resources:
+## Deploy (Expo Hosting)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Set `ANTHROPIC_API_KEY` (and optionally `KV_REST_API_URL` / `KV_REST_API_TOKEN` for Redis rate limits) as **sensitive** environment variables for the `production` environment on expo.dev, then:
 
-## Join the community
+```bash
+npx expo export --platform web
+npx eas-cli@latest deploy --prod --environment production
+```
 
-Join our community of developers creating universal apps.
+## Roadmap
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [ ] Accounts and cloud sync (Supabase)
+- [ ] Monthly budgets and alerts
+- [ ] Export to CSV / Excel
+- [ ] App Store / TestFlight build
